@@ -1,0 +1,680 @@
+/* ============================================================
+   1) PALETA DE CORES (as cores ficam em variáveis para reusar)
+   ============================================================ */
+:root {
+  /* Marrons (couro dos livros e madeira) */
+  --marrom-escuro: #96411a;
+  --marrom:        #c05108;
+  --marrom-medio:  #8B6239;
+  --marrom-claro:  #B89B7C;
+
+  /* Papel (baunilha, pergaminho, off-white) */
+  --pergaminho:    #F5EBD7;
+  --baunilha:      #FBF3E3;
+  --off-white:     #FDFAF3;
+
+  /* Detalhes românticos */
+  --rosa-seco:     #B08585;
+  --rosa-claro:    #D8B9B9;
+
+  /* Azul sereno */
+  --azul-sereno:   #7A8CA0;
+  --azul-claro:    #A3B1C2;
+
+  /* Dourado velho (enfeites) */
+  --dourado:       #C9A227;
+  --dourado-suave: #D8BE7A;
+}
+
+/* ============================================================
+   2) RESET (zera margens e paddings padrão do navegador)
+   ============================================================ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  color: var(--marrom-escuro);
+  background: var(--marrom-escuro);
+  min-height: 100vh;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ============================================================
+   3) CAPA DO ÁLBUM (o "livro" que se abre em duas partes)
+   ============================================================ */
+.capa {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  perspective: 2000px;
+  transition: visibility 0s linear 1.8s; /* esconde só depois da animação */
+}
+
+.capa.aberta {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Cada porta da capa */
+.capa-porta {
+  flex: 1;
+  position: relative;
+  transition: transform 1.6s cubic-bezier(.6, .05, .3, 1);
+  box-shadow: inset 0 0 80px rgba(0, 0, 0, .7), 0 0 40px rgba(0, 0, 0, .5);
+  background:
+    repeating-linear-gradient(90deg,
+      rgba(0, 0, 0, .2) 0px, rgba(0, 0, 0, .2) 2px,
+      transparent 2px, transparent 9px),
+    linear-gradient(135deg, #983800 0%, #8e2d00 60%, #ad3a00 100%);
+  border: 1px solid rgba(201, 162, 39, .3);
+}
+
+/* Moldura dourada decorativa (feita com box-shadow) */
+.capa-porta::before {
+  content: "";
+  position: absolute;
+  inset: 25px;
+  border: 2px solid var(--dourado);
+  border-radius: 3px;
+  opacity: .35;
+  pointer-events: none;
+}
+
+/* Dobradiças: girar a partir das laterais externas */
+.capa-esq { transform-origin: left center;  border-radius: 6px 0 0 6px; }
+.capa-dir { transform-origin: right center; border-radius: 0 6px 6px 0; }
+
+/* Quando a capa recebe .aberta, cada porta gira para fora */
+.capa.aberta .capa-esq { transform: rotateY(155deg); }
+.capa.aberta .capa-dir { transform: rotateY(-155deg); }
+
+/* Texto que fica em cima das duas portas */
+.capa-texto {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 10;
+  width: 90%;
+  max-width: 600px;
+  padding: 30px 20px;
+  pointer-events: none;
+}
+
+.capa-texto > * { pointer-events: auto; }
+
+.capa-ornamento {
+  color: var(--dourado);
+  font-size: 2rem;
+  margin-bottom: 18px;
+  letter-spacing: 6px;
+}
+
+.capa-titulo {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: clamp(2rem, 6vw, 3.4rem);
+  color: var(--pergaminho);
+  letter-spacing: 3px;
+  line-height: 1.15;
+  text-shadow: 0 3px 18px rgba(0, 0, 0, .8);
+  margin-bottom: 18px;
+}
+
+.capa-subtitulo {
+  color: var(--rosa-claro);
+  font-style: italic;
+  font-size: 1.1rem;
+  margin-bottom: 32px;
+  letter-spacing: 1px;
+}
+
+.botao-abrir {
+  background: transparent;
+  color: var(--dourado-suave);
+  border: 2px solid var(--dourado);
+  padding: 14px 40px;
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all .3s ease;
+}
+
+.botao-abrir:hover {
+  background: var(--dourado);
+  color: var(--marrom-escuro);
+  box-shadow: 0 0 30px rgba(201, 162, 39, .6);
+  transform: translateY(-2px);
+}
+
+.capa-dica {
+  color: var(--rosa-claro);
+  font-size: .85rem;
+  letter-spacing: 4px;
+  margin-top: 24px;
+  opacity: .6;
+  animation: pulsar 2.2s ease-in-out infinite;
+  text-transform: uppercase;
+}
+
+@keyframes pulsar {
+  0%, 100% { opacity: .3; }
+  50%      { opacity: .85; }
+}
+
+/* ============================================================
+   4) SITE PRINCIPAL (fundo tipo parede de biblioteca)
+   ============================================================ */
+.site {
+  max-width: 1150px;
+  margin: 40px auto 60px;
+  padding: 45px 35px;
+  background:
+    radial-gradient(circle at 15% 15%, rgba(176, 133, 133, .08) 0%, transparent 45%),
+    radial-gradient(circle at 85% 85%, rgba(122, 140, 160, .08) 0%, transparent 45%),
+    radial-gradient(circle at 50% 50%, rgba(201, 162, 39, .04) 0%, transparent 60%),
+    linear-gradient(180deg, var(--pergaminho) 0%, var(--baunilha) 100%);
+  border-radius: 12px;
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, .6),
+    inset 0 0 120px rgba(160, 120, 80, .12);
+  border: 1px solid rgba(201, 162, 39, .4);
+  position: relative;
+}
+
+/* Fitas decorativas nos cantos (como um livro antigo) */
+.site::before,
+.site::after {
+  content: "";
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  border: 2px solid var(--dourado);
+  opacity: .35;
+}
+.site::before { top: 15px;    left: 15px;    border-right: none;  border-bottom: none; }
+.site::after  { bottom: 15px; right: 15px;   border-left: none;   border-top: none; }
+
+/* ============================================================
+   5) CABEÇALHO
+   ============================================================ */
+.cabecalho { text-align: center; margin-bottom: 35px; }
+
+/* Estante com livrinhos em CSS */
+.estante {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 5px;
+  height: 90px;
+  padding-bottom: 10px;
+  border-bottom: 8px solid var(--marrom);
+  box-shadow:
+    0 10px 20px -8px rgba(0, 0, 0, .5),
+    inset 0 -2px 4px rgba(0, 0, 0, .3);
+  margin-bottom: 28px;
+  position: relative;
+}
+
+/* Página dos livros */
+.livro {
+  width: 22px;
+  height: var(--h);
+  background: var(--c);
+  border-radius: 3px 3px 0 0;
+  box-shadow:
+    inset -5px 0 8px rgba(0, 0, 0, .35),
+    inset 3px 0 6px rgba(255, 255, 255, .08),
+    0 2px 4px rgba(0, 0, 0, .2);
+  transition: transform .3s ease;
+}
+
+.livro:hover { transform: translateY(-5px); }
+
+.estante-baixa { height: 60px; border-bottom-width: 6px; margin-top: 20px; margin-bottom: 10px; }
+.estante-baixa .livro { width: 18px; }
+
+.titulo-site {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: clamp(1.7rem, 4vw, 2.6rem);
+  color: var(--marrom-escuro);
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+
+.subtitulo-site {
+  font-style: italic;
+  color: var(--marrom);
+  font-size: 1.05rem;
+  opacity: .8;
+}
+
+/* ============================================================
+   6) ABAS (menu de navegação)
+   ============================================================ */
+.abas {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin: 30px 0 35px;
+  flex-wrap: wrap;
+}
+
+.aba-botao {
+  background: var(--off-white);
+  color: var(--marrom);
+  border: 1px solid var(--marrom-claro);
+  border-radius: 6px 6px 0 0;
+  padding: 13px 28px;
+  font-family: 'Cinzel', serif;
+  font-size: .95rem;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all .25s ease;
+  position: relative;
+}
+
+.aba-botao:hover {
+  background: var(--rosa-claro);
+  color: var(--marrom-escuro);
+}
+
+.aba-botao.ativo {
+  background: var(--marrom);
+  color: var(--pergaminho);
+  border-color: var(--marrom-escuro);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, .25);
+}
+
+/* ============================================================
+   7) PAINÉIS (só o painel .ativo aparece)
+   ============================================================ */
+.painel { display: none; }
+.painel.ativo { display: block; animation: aparecer .5s ease; }
+
+@keyframes aparecer {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.painel-cabecalho { text-align: center; margin-bottom: 30px; }
+
+.painel-titulo {
+  font-family: 'Cinzel', serif;
+  font-size: 1.6rem;
+  color: var(--marrom-escuro);
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+
+.painel-texto {
+  color: var(--marrom);
+  max-width: 620px;
+  margin: 0 auto;
+  font-size: 1.05rem;
+  opacity: .85;
+}
+
+.contador {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 6px 18px;
+  background: var(--rosa-claro);
+  color: var(--marrom-escuro);
+  border-radius: 20px;
+  font-size: .9rem;
+  letter-spacing: 1px;
+  border: 1px solid var(--rosa-seco);
+}
+
+/* ============================================================
+   8) ÁLBUM — grade com 55 espaços
+   ============================================================ */
+.grade-album {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(115px, 1fr));
+  gap: 14px;
+  padding: 6px;
+}
+
+.slot {
+  aspect-ratio: 1 / 1;
+  border-radius: 8px;
+  background: var(--off-white);
+  border: 2px dashed var(--marrom-claro);
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--marrom-medio);
+  transition: all .25s ease;
+  overflow: hidden;
+  user-select: none;
+}
+
+.slot:hover {
+  border-color: var(--dourado);
+  background: var(--baunilha);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, .15);
+}
+
+.slot .numero {
+  font-family: 'Cinzel', serif;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--marrom);
+}
+
+.slot .mais {
+  font-size: 1.1rem;
+  opacity: .45;
+  margin-top: 4px;
+  color: var(--dourado);
+}
+
+/* Slot com foto/vídeo */
+.slot.preenchido {
+  border: 2px solid var(--dourado);
+  background: var(--marrom-escuro);
+}
+
+.slot.preenchido img,
+.slot.preenchido video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.slot .play-icone {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  background: rgba(0, 0, 0, .65);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .8rem;
+  pointer-events: none;
+}
+
+/* ============================================================
+   9) LIVRO DE VISITAS (formulário + lista de recados)
+   ============================================================ */
+.form-recado {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--off-white);
+  padding: 24px;
+  border-radius: 10px;
+  border: 1px solid var(--marrom-claro);
+  box-shadow: inset 0 0 20px rgba(160, 120, 80, .08);
+  margin-bottom: 34px;
+}
+
+.campo {
+  width: 100%;
+  padding: 13px 16px;
+  border: 1px solid var(--marrom-claro);
+  border-radius: 6px;
+  background: var(--pergaminho);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.05rem;
+  color: var(--marrom-escuro);
+  transition: all .25s ease;
+}
+
+.campo-area { resize: vertical; min-height: 110px; }
+
+.campo:focus {
+  outline: none;
+  border-color: var(--dourado);
+  box-shadow: 0 0 0 3px rgba(201, 162, 39, .22);
+  background: var(--baunilha);
+}
+
+.btn {
+  font-family: 'Cinzel', serif;
+  font-size: .9rem;
+  letter-spacing: 1px;
+  padding: 12px 26px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: none;
+  transition: all .25s ease;
+  text-transform: uppercase;
+}
+
+.btn-principal {
+  background: var(--marrom);
+  color: var(--pergaminho);
+  align-self: flex-start;
+}
+
+.btn-principal:hover {
+  background: var(--marrom-escuro);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, .25);
+}
+
+.btn-perigo { background: var(--rosa-seco); color: #fff; }
+.btn-perigo:hover { background: #8D6363; }
+
+/* Cartão de cada recado */
+.recado {
+  background: var(--off-white);
+  border-left: 4px solid var(--rosa-seco);
+  padding: 18px 22px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .08);
+  transition: transform .25s ease;
+}
+
+.recado:hover { transform: translateX(4px); }
+
+.recado-topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.recado-nome {
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--marrom-escuro);
+}
+
+.recado-data {
+  font-size: .85rem;
+  color: var(--azul-sereno);
+  font-style: italic;
+}
+
+.recado-texto {
+  color: var(--marrom);
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  margin-bottom: 12px;
+  font-size: 1.05rem;
+}
+
+.recado-acoes {
+  display: flex;
+  gap: 10px;
+}
+
+.recado-acoes button {
+  background: transparent;
+  border: 1px solid var(--marrom-claro);
+  color: var(--marrom);
+  padding: 5px 14px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: .9rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all .2s;
+}
+
+.recado-acoes button:hover {
+  background: var(--baunilha);
+  border-color: var(--dourado);
+}
+
+.recado-acoes .btn-excluir:hover {
+  background: var(--rosa-claro);
+  color: var(--marrom-escuro);
+}
+
+.lista-vazia {
+  text-align: center;
+  padding: 40px 20px;
+  font-style: italic;
+  color: var(--marrom-claro);
+  font-size: 1.1rem;
+}
+
+/* ============================================================
+   10) MODAL (janela para visualizar foto/vídeo)
+   ============================================================ */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 12, 8, .9);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 5000;
+}
+
+.modal.aberto { display: flex; animation: aparecer .3s ease; }
+
+.modal-caixa {
+  background: var(--pergaminho);
+  padding: 22px;
+  border-radius: 10px;
+  max-width: 92vw;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border: 2px solid var(--dourado);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, .7);
+  position: relative;
+}
+
+.modal-midia img,
+.modal-midia video {
+  max-width: 82vw;
+  max-height: 62vh;
+  border-radius: 6px;
+  display: block;
+}
+
+.modal-fechar {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--marrom);
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.modal-fechar:hover { background: var(--rosa-claro); }
+
+.modal-botoes {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.modal-botoes .btn {
+  background: var(--marrom);
+  color: var(--pergaminho);
+}
+
+.modal-botoes .btn:hover { background: var(--marrom-escuro); }
+.modal-botoes .btn-perigo { background: var(--rosa-seco); }
+.modal-botoes .btn-perigo:hover { background: #8D6363; }
+
+/* ============================================================
+   11) RODAPÉ
+   ============================================================ */
+.rodape {
+  text-align: center;
+  margin-top: 40px;
+  padding-top: 25px;
+  border-top: 2px solid var(--marrom-claro);
+  color: var(--marrom);
+  font-style: italic;
+  font-size: .95rem;
+}
+
+/* ============================================================
+   12) RESPONSIVO (celular e tablet)
+   ============================================================ */
+@media (max-width: 768px) {
+  .site { margin: 15px; padding: 25px 18px; border-radius: 8px; }
+  .site::before, .site::after { width: 35px; height: 35px; }
+  .site::before { top: 8px; left: 8px; }
+  .site::after  { bottom: 8px; right: 8px; }
+
+  .estante { height: 65px; }
+  .livro { width: 16px; }
+  .estante-baixa { height: 45px; }
+  .estante-baixa .livro { width: 13px; }
+
+  .aba-botao { padding: 11px 18px; font-size: .85rem; }
+
+  .grade-album {
+    grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+    gap: 9px;
+  }
+  .slot .numero { font-size: 1rem; }
+
+  .capa-titulo { letter-spacing: 1px; }
+  .botao-abrir { padding: 12px 28px; font-size: .9rem; }
+
+  .modal-midia img,
+  .modal-midia video { max-width: 86vw; max-height: 50vh; }
+}
+
+@media (max-width: 420px) {
+  .grade-album {
+    grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+    gap: 7px;
+  }
+  .recado-acoes { flex-wrap: wrap; }
+}

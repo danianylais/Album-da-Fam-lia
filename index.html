@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Álbum da Família dos Santos</title>
+
+  <!-- Fontes do Google: Cinzel (títulos clássicos) e Cormorant (textos elegantes) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+  <!-- Liga o CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- ============================================================
+       CAPA DO ÁLBUM
+       Duas portas que se abrem como um livro ao clicar
+       ============================================================ -->
+  <div class="capa" id="capa">
+    <!-- Porta esquerda -->
+    <div class="capa-porta capa-esq"></div>
+    <!-- Porta direita -->
+    <div class="capa-porta capa-dir"></div>
+
+    <!-- Texto da capa (fica por cima das duas portas) -->
+    <div class="capa-texto">
+      <div class="capa-ornamento">❦</div>
+      <h1 class="capa-titulo">Álbum da<br>Família dos Santos</h1>
+      <p class="capa-subtitulo">Memórias que o tempo guardou</p>
+      <button class="botao-abrir" id="botaoAbrir" type="button">Abrir o Álbum</button>
+      <p class="capa-dica">clique para abrir</p>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       CONTEÚDO PRINCIPAL (aparece após a capa abrir)
+       ============================================================ -->
+  <main class="site" id="site">
+
+    <!-- ---------- CABEÇALHO ---------- -->
+    <header class="cabecalho">
+
+      <!-- Estante decorativa com livrinhos feitos em CSS -->
+      <div class="estante" aria-hidden="true">
+        <span class="livro" style="--c:#5C3D28; --h:62px"></span>
+        <span class="livro" style="--c:#8B6239; --h:76px"></span>
+        <span class="livro" style="--c:#C08B8B; --h:56px"></span>
+        <span class="livro" style="--c:#7A8CA0; --h:70px"></span>
+        <span class="livro" style="--c:#3B2618; --h:80px"></span>
+        <span class="livro" style="--c:#A67C52; --h:60px"></span>
+        <span class="livro" style="--c:#C9A227; --h:72px"></span>
+        <span class="livro" style="--c:#5C3D28; --h:66px"></span>
+        <span class="livro" style="--c:#7A8CA0; --h:58px"></span>
+        <span class="livro" style="--c:#8B6239; --h:74px"></span>
+      </div>
+
+      <h1 class="titulo-site">Álbum da Família dos Santos</h1>
+      <p class="subtitulo-site">Um cantinho para guardar quem a gente ama</p>
+    </header>
+
+    <!-- ---------- MENU DE ABAS ---------- -->
+    <nav class="abas">
+      <button class="aba-botao ativo" data-aba="fotos" type="button">
+        📸 Álbum — 55 Espaços
+      </button>
+      <button class="aba-botao" data-aba="recados" type="button">
+        💬 Livro de Visitas
+      </button>
+    </nav>
+
+    <!-- ---------- PAINEL 1: ÁLBUM DE FOTOS ---------- -->
+    <section class="painel ativo" id="fotos">
+
+      <div class="painel-cabecalho">
+        <h2 class="painel-titulo">Nossas Memórias</h2>
+        <p class="painel-texto">
+          Clique em um espaço vazio para adicionar uma foto ou um vídeo.
+          Depois use o botão <strong>Baixar</strong> para guardar o arquivo no seu computador.
+        </p>
+        <p class="contador" id="contador">0 de 55 espaços preenchidos</p>
+      </div>
+
+      <!-- Os 55 espaços são criados pelo JavaScript -->
+      <div class="grade-album" id="gradeAlbum"></div>
+    </section>
+
+    <!-- ---------- PAINEL 2: LIVRO DE VISITAS ---------- -->
+    <section class="painel" id="recados">
+
+      <div class="painel-cabecalho">
+        <h2 class="painel-titulo">Livro de Visitas</h2>
+        <p class="painel-texto">
+          Deixe uma lembrança, uma saudade ou um carinho.
+          Você pode <strong>editar</strong> ou <strong>excluir</strong> seu recado quando quiser.
+        </p>
+      </div>
+
+      <!-- Formulário para escrever um recado -->
+      <form class="form-recado" id="formRecado">
+        <input type="text" id="nomeRecado" class="campo"
+               placeholder="Seu nome" maxlength="40" required>
+
+        <textarea id="textoRecado" class="campo campo-area"
+                  placeholder="Escreva seu recado..." maxlength="500" required></textarea>
+
+        <button type="submit" class="btn btn-principal">Guardar no Livro</button>
+      </form>
+
+      <!-- Os recados aparecem aqui pelo JavaScript -->
+      <div class="lista-recados" id="listaRecados"></div>
+    </section>
+
+    <!-- ---------- RODAPÉ ---------- -->
+    <footer class="rodape">
+      <div class="estante estante-baixa" aria-hidden="true">
+        <span class="livro" style="--c:#3B2618; --h:48px"></span>
+        <span class="livro" style="--c:#8B6239; --h:56px"></span>
+        <span class="livro" style="--c:#C08B8B; --h:44px"></span>
+        <span class="livro" style="--c:#7A8CA0; --h:52px"></span>
+        <span class="livro" style="--c:#C9A227; --h:46px"></span>
+      </div>
+      <p>Feito com carinho por Daniany ❤︎</p>
+    </footer>
+
+  </main>
+
+  <!-- ---------- MODAL (janela para ver foto/vídeo) ---------- -->
+  <div class="modal" id="modal">
+    <div class="modal-caixa">
+      <button class="modal-fechar" id="modalFechar" type="button">✕</button>
+      <div class="modal-midia" id="modalMidia"></div>
+      <div class="modal-botoes">
+        <button class="btn" id="botaoBaixar" type="button">⬇ Baixar</button>
+        <button class="btn btn-perigo" id="botaoRemover" type="button">🗑 Remover</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Input escondido para escolher arquivos -->
+  <input type="file" id="inputArquivo" accept="image/*,video/*" hidden>
+
+  <!-- Liga o JavaScript no fim (melhor desempenho) -->
+  <script src="script.js"></script>
+</body>
+</html>
